@@ -29,6 +29,8 @@ Software list:
 - ggplot2
 - dplyr
 - GGally
+- ggbio
+- epivizr
 - edgeR
 - EDAseq
 - nullabor
