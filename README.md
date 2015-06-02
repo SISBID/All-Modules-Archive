@@ -10,17 +10,25 @@ Module description: In this module, we will present general-purpose techniques f
 Recommended Reading: Cookbook for R, by Winston Chang, available at www.cookbook-r.com.
 
 Day 1:
-Session 1
-Session 2
-Session 3
-Session 4
+- Session 1
+- Session 2
+- Session 3
+- Session 4
 
 Day 2:
-Session 1
-Session 2
-Session 3
-Session 4
+- Session 1
+- Session 2
+- Session 3
+- Session 4
 
 Day 3:
-Session 1
-Session 2
+- Session 1
+- Session 2
+
+Software list:
+- ggplot2
+- dplyr
+- GGally
+- edgeR
+- EDAseq
+- nullabor
