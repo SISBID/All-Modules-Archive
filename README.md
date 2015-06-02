@@ -10,20 +10,20 @@ Module description: In this module, we will present general-purpose techniques f
 Recommended Reading: Cookbook for R, by Winston Chang, available at www.cookbook-r.com.
 
 Day 1:
-- Session 1
-- Session 2
-- Session 3
-- Session 4
+- Session 1: Grammar of graphics for making plots
+- Session 2: Rearranging data
+- Session 3: Multivariate plots used in pre-processing biological data
+- Session 4: Advanced grammar for making sophisticated plots
 
 Day 2:
-- Session 1
-- Session 2
-- Session 3
-- Session 4
+- Session 1: Genomic plots using ggbio
+- Session 2: Interactive graphics using ggvis
+- Session 3: Plots for assessing differential expression
+- Session 4: Clustering expression data or inference??
 
 Day 3:
-- Session 1
-- Session 2
+- Session 1: Shiny apps 
+- Session 2: Wrap-up
 
 Software list:
 - ggplot2
@@ -34,3 +34,4 @@ Software list:
 - edgeR
 - EDAseq
 - nullabor
+- shiny
