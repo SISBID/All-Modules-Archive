@@ -33,6 +33,11 @@ Software list:
 - epivizr
 - edgeR
 - EDAseq
+- Biobase
+- rtracklayer
+- Rsamtools
+- GenomicAlignments
 - nullabor
 - shiny
+- stringr
 - ggenealogy
