@@ -35,3 +35,4 @@ Software list:
 - EDAseq
 - nullabor
 - shiny
+- ggenealogy
