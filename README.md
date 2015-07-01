@@ -19,7 +19,7 @@ Day 2:
 - Session 1: Genomic plots using ggbio
 - Session 2: Interactive graphics using ggvis
 - Session 3: Plots for examining differential expression
-- Session 4: Shiny apps for big bilogical data
+- Session 4: Shiny apps for big biological data
 
 Day 3:
 - Session 1: Shiny apps 
