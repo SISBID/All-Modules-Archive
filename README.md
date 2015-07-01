@@ -13,12 +13,12 @@ Day 1:
 - Session 1: Grammar of graphics for making plots
 - Session 2: Rearranging data
 - Session 3: Multivariate plots used in pre-processing biological data
-- Session 4: Advanced grammar for making sophisticated plots
+- Session 4: Genomic plots using ggbio 
 
 Day 2:
-- Session 1: Genomic plots using ggbio
+- Session 1: Advanced grammar for making sophisticated plots
 - Session 2: Interactive graphics using ggvis
-- Session 3: Plots for examining differential expression
+- Session 3: Plots for examining differential expression, and inference
 - Session 4: Shiny apps for big biological data
 
 Day 3:
