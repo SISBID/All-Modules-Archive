@@ -26,7 +26,8 @@ Recommended Reading: Cookbook for R, by Winston Chang, available at <http://www.
 1. Building interactive web apps with shiny.
 1. Make your own shiny app.
 
-Software list:
+## Software list
+
 - ggplot2
 - dplyr
 - tidyr
