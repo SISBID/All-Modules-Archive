@@ -10,24 +10,25 @@ Module description: In this module, we will present general-purpose techniques f
 Recommended Reading: Cookbook for R, by Winston Chang, available at www.cookbook-r.com.
 
 Day 1:
-- Session 1: Grammar of graphics for making plots
-- Session 2: Rearranging data
-- Session 3: Multivariate plots used in pre-processing biological data
-- Session 4: Genomic plots using ggbio 
+1. The grammar of graphics and ggplot2.
+1. Layered graphics for big data.
 
 Day 2:
-- Session 1: Advanced grammar for making sophisticated plots
-- Session 2: Interactive graphics using ggvis
-- Session 3: Plots for examining differential expression, and inference
-- Session 4: Shiny apps for big biological data
+
+1. Multivariate plots for bioinformatics, using ggplot2 and GGally.
+1. Genomic plots, using ggplot2 and ggbio.
+1. Data manipulation with dplyr.
+1. Tidy data and tidying your messy data with tidyr.
 
 Day 3:
-- Session 1: Shiny apps 
-- Session 2: Wrap-up
+1. Interactive graphics using ggvis.
+1. Building interactive web apps with shiny.
+1. Make your own shiny app.
 
 Software list:
 - ggplot2
 - dplyr
+- tidyr
 - GGally
 - ggbio
 - epivizr
