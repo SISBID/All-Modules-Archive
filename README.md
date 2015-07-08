@@ -16,7 +16,7 @@ Recommended Reading: Cookbook for R, by Winston Chang, available at <http://www.
 ### Day 2
 
 1. Multivariate plots for bioinformatics, using ggplot2 and GGally.
-1. Genomic plots, using ggplot2 and ggbio.
+1. Data mining and genomic plots.
 1. Data manipulation with dplyr.
 1. Tidy data and tidying your messy data with tidyr.
 
