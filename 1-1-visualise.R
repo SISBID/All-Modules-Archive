@@ -1,3 +1,5 @@
+# install.packages("ggplot2")
+
 library(readr)
 library(tidyr)
 library(dplyr)
@@ -45,11 +47,14 @@ ggplot(daily, aes(temp, humid, shape = origin)) +
 ggplot(daily, aes(temp, humid, colour = origin)) +
   geom_point()
 
+
 # Discrete data
 ggplot(daily, aes(wind_dir, wind_speed)) +
   geom_point()
 ggplot(daily, aes(wind_dir, wind_speed)) +
-  geom_jitter()
+  geom_jitter() +
+  coord_polar()
+
 # And in the dev version
 ggplot(daily, aes(wind_dir, wind_speed)) +
   geom_count()
@@ -78,6 +83,18 @@ daily <- daily %>%
 ggplot(daily, aes(date, temp_diff)) +
   geom_line(aes(colour = origin))
 
+
+jfk$yday <- lubridate::yday(jfk$date)
+
+ggplot(jfk, aes(hour, humid)) +
+  geom_line(aes(group = yday)) +
+  facet_wrap(~yday)
+
+ggplot(jfk, aes(hour, humid)) +
+  stat_summary(fun.ymin = min, fun.ymax = max, geom = "ribbon") +
+  facet_wrap(~month)
+
+
 ggplot(jfk, aes(hour, temp)) +
   geom_line()
 ggplot(jfk, aes(hour, temp)) +
@@ -90,18 +107,23 @@ ggplot(jfk, aes(hour, temp)) +
 # Histograms -------------------------------------------------------------------
 
 ggplot(daily, aes(wind_speed)) + geom_histogram()
-ggplot(daily, aes(wind_speed)) + geom_histogram(binwidth = 1)
+ggplot(daily, aes(wind_speed)) +
+  geom_histogram(binwidth = 1)
 
 ggplot(daily, aes(wind_dir)) + geom_histogram()
+ggplot(daily, aes(wind_dir)) + geom_histogram()
+
 ggplot(daily, aes(wind_dir)) +
   geom_histogram(binwidth = 10)
 
 ggplot(daily, aes(precip)) + geom_histogram()
-ggplot(daily, aes(precip)) +
+
+ggplot(filter(weather, precip > 0), aes(precip)) +
   geom_histogram(binwidth = 0.01)
 # ALWAYS EXPERIMENT WITH THE BIN WIDTH!
 
 # What's strange about wind speed?
+ggplot(daily, aes(wind_speed)) + geom_histogram()
 ggplot(daily, aes(wind_speed)) + geom_histogram(binwidth = 1)
 ggplot(daily, aes(wind_speed)) + geom_histogram(binwidth = 0.5)
 ggplot(daily, aes(wind_speed)) + geom_histogram(binwidth = 0.1)

@@ -27,7 +27,7 @@ ggplot(diamonds, aes(carat, price)) +
   geom_point(colour = "blue")
 
 ggplot(diamonds, aes(carat, price)) +
-  geom_point(alpha = 1/10)
+  geom_point(alpha = 1/20)
 ggplot(diamonds, aes(carat, price)) +
   geom_point(shape = 1)
 ggplot(diamonds, aes(carat, price)) +
@@ -40,18 +40,43 @@ ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_point() +
   geom_smooth()
 
+ggplot(diamonds, aes(log10(carat), log10(price), colour = cut)) +
+  geom_point() +
+  geom_smooth()
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_point(aes(colour = cut)) +
+  geom_smooth()
+
+
+
 ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_point() +
   geom_smooth(method = "lm")
+
+mod <- lm(log10(price) ~ log10(carat), data = diamonds)
+diamonds$resid <- resid(mod)
+
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_point(aes(colour = resid)) +
+  geom_smooth(method = "lm") +
+  scale_colour_gradient2()
+
+ggplot(diamonds, aes(log10(carat), resid)) +
+  geom_point()
+
 
 ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_boxplot()
 
 ggplot(diamonds, aes(log10(carat), log10(price))) +
-  geom_boxplot(aes(group = plyr::round_any(log10(carat), 0.1)))
+  geom_boxplot(aes(group = plyr::round_any(log10(carat), 0.05)))
+
+plyr::round_any(c(3.232, 5.46, 10.46), 0.1)
+plyr::round_any(c(3.232, 5.46, 10.46), 0.25)
+plyr::round_any(c(3.232, 5.46, 10.46), 3)
 
 ggplot(diamonds, aes(log10(carat), log10(price))) +
-  geom_violin(aes(group = plyr::round_any(log10(carat), 0.1)))
+  geom_violin(aes(group = plyr::round_any(log10(carat), 0.1)), scale = "width")
 
 ggplot(diamonds, aes(1, depth)) +
   geom_boxplot()
@@ -79,6 +104,34 @@ ggplot(diamonds, aes(depth, colour = cut)) +
 ggplot(diamonds, aes(depth, colour = cut)) +
   geom_freqpoly(aes(y = ..density..), binwidth = 0.2) +
   xlim(56, 67)
+
+
+
+# Distribution of price ---------------------------------------------------
+
+ggplot(diamonds, aes(price)) +
+  geom_histogram()
+
+ggplot(diamonds, aes(log10(price))) +
+  geom_histogram()
+ggplot(diamonds, aes(log10(price))) +
+  geom_histogram(binwidth = 0.05)
+
+ggplot(diamonds, aes(log10(price))) +
+  geom_histogram(aes(fill = cut), binwidth = 0.05)
+ggplot(diamonds, aes(log10(price))) +
+  geom_freqpoly(aes(colour = cut), binwidth = 0.05)
+ggplot(diamonds, aes(log10(price))) +
+  geom_freqpoly(aes(y = ..density.., colour = cut), binwidth = 0.05)
+ggplot(diamonds, aes(log10(price))) +
+  geom_freqpoly(aes(y = ..density.., colour = cut), binwidth = 0.25)
+
+ggplot(diamonds, aes(cut, log10(price))) +
+  geom_violin()
+
+ggplot(diamonds, aes(log10(price))) +
+  geom_density(aes(y = ..density.., colour = cut))
+
 
 
 # Comparisons -------------------------------------------------------------
