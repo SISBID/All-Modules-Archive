@@ -29,7 +29,8 @@ houston
 # BE CAREFUL!
 # flights <- filter(flights, dest %in% c("IAH", "HOU"))
 
-filter(flights, dest %in% c("SFO", "OAK"))filter(flights, dest == "SFO" | dest == "OAK")
+filter(flights, dest %in% c("SFO", "OAK"))
+filter(flights, dest == "SFO" | dest == "OAK")
 # Not this!
 # filter(flights, dest == "SFO" | "OAK")
 

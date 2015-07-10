@@ -133,11 +133,29 @@ ggplot(diamonds, aes(log10(price))) +
   geom_density(aes(y = ..density.., colour = cut))
 
 
+# Joint summaries ---------------------------------------------------------
+
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_point()
+
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_bin2d()
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_hex()
+
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_density2d()
 
 # Comparisons -------------------------------------------------------------
 
 ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_point(aes(colour = color))
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_point() +
+  facet_wrap(~ color)
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_bin2d() +
+  facet_wrap(~ color)
 
 ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_bin2d() +
@@ -146,7 +164,26 @@ ggplot(diamonds, aes(log10(carat), log10(price))) +
 # Annotations can be very useful!
 coef(lm(log10(price) ~ log10(carat), data = diamonds))
 
+mod <- lm(log10(price) ~ log10(carat), data = diamonds)
+
+grid <- data.frame(
+  carat = seq(min(diamonds$carat), max(diamonds$carat), length = 10)
+)
+grid$price <- 10 ^ predict(mod, newdata = grid)
+grid
+
 ggplot(diamonds, aes(log10(carat), log10(price))) +
   geom_bin2d() +
-  geom_abline(intercept = 3.67, slope = 1.68, colour = "white") +
+  geom_line(data = grid, colour = "white", size = 2) +
   facet_wrap(~color)
+
+mod_coef <- coef(mod)
+ggplot(diamonds, aes(log10(carat), log10(price))) +
+  geom_bin2d() +
+  geom_abline(intercept = mod_coef[1], slope = mod_coef[2], colour = "white") +
+  facet_wrap(~color)
+
+
+diamonds$color <- factor(diamonds$color, ordered = F)
+anova(lm(log10(price) ~ log10(carat) * color, data = diamonds))
+
