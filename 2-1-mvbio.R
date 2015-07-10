@@ -1,18 +1,13 @@
 # Load the data
-setwd("nprot.data")
-samples = read.table("samples.csv", sep=";", header=TRUE)
-dim(samples)
-counts = read.csv("counts.csv")
-dim(counts)
-
 # source("http://bioconductor.org/biocLite.R")
 # biocLite("edgeR")
 library(edgeR)
+setwd("nprot.data")
 counts = readDGE(samples$countf)$counts
 dim(counts)
 setwd("..")
 
-# Filter weakly expressed and noninformative (e.g., non-aligned) features
+# Filter weakly expressed and noninformative (e.g., non-aligned) features 
 noint = rownames(counts) %in%
   c("no_feature","ambiguous","too_low_aQual",
     "not_aligned","alignment_not_unique")
@@ -21,7 +16,7 @@ counts.all <- counts[,order(samples$condition)]
 colnames(counts.all) = samples$shortname[order(samples$condition)]
 head(counts.all)
 
-# Keep only genes with at least 1 read per million, for the smallest
+# Keep only genes with at least 1 read per million, for the smallest 
 # number of replicates in  treatment
 keep = rowSums(cpms > 1) >= 3 & !noint
 counts = counts.all[keep,]
@@ -42,9 +37,9 @@ library(ggplot2)
 library(GGally)
 d$counts <- data.frame(d$counts) # Needs to be a data frame
 d$lcounts <- log(d$counts+1)
-ggparcoord(d$lcounts, columns=1:7, boxplot=TRUE, scale="globalminmax",
-           showPoints=FALSE, alphaLines=0) +
-  xlab("") + ylab("log(cpm)") +
+ggparcoord(d$lcounts, columns=1:7, boxplot=TRUE, scale="globalminmax", 
+           showPoints=FALSE, alphaLines=0) + 
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
 # ggparcoord(d$lcounts, columns=1:7, alphaLines=0.1)
 
@@ -52,8 +47,8 @@ ggparcoord(d$lcounts, columns=1:7, boxplot=TRUE, scale="globalminmax",
 d = calcNormFactors(d, method="TMM")
 nc = data.frame(cpm(d, normalized.lib.sizes = TRUE, log=TRUE))
 ggparcoord(nc, columns=1:7, boxplot=TRUE, scale="globalminmax", showPoints=FALSE,
-           alphaLines=0) +
-  xlab("") + ylab("log(cpm)") +
+           alphaLines=0) + 
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
 
 # Check that the MDS was conducted on the normalized data
@@ -65,11 +60,11 @@ d.mds2 <- plotMDS(nc, labels = samples$shortname[order(samples$condition)],
 ggscatmat(nc)
 
 # Full parallel coordinate plot
-ggparcoord(nc, columns=1:7, scale="globalminmax", alphaLines=0.5) +
-  xlab("") + ylab("log(cpm)") +
+ggparcoord(nc, columns=1:7, scale="globalminmax", alphaLines=0.5) + 
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
-ggparcoord(nc, columns=1:7, scale="globalminmax", alphaLines=0.01) +
-  xlab("") + ylab("log(cpm)") +
+ggparcoord(nc, columns=1:7, scale="globalminmax", alphaLines=0.01) + 
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
 
 # Porcupine plot
@@ -77,13 +72,13 @@ ggplot(nc) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3, yend=KD.PA.4))
   theme_bw() + theme(aspect.ratio=1)
 
 # Check the mean and variance relationship
-# For the Poisson model, the mean = variance
+# For the Poisson model, the mean = variance 
 # RNA seq tends to be more overdispersed, variance is larger than expected
 # Over-dispersed leads to fitting a negative binomial model
 # Common dispersion would be used if all genes assumed to have same variance
 d = estimateCommonDisp(d)
 d$common.dispersion
-# Tagwise dispersion is a weighted average of individual gene dispersion
+# Tagwise dispersion is a weighted average of individual gene dispersion 
 # with common dispersion
 d = estimateTagwiseDisp(d)
 summary(d$tagwise.dispersion)
@@ -95,7 +90,7 @@ plotBCV(d)
 mv <- binMeanVar(d, group = d$samples$group)
 # $means are the means for each gene
 # $vars are the pooled variances for each gene
-qplot(mv$means, mv$vars, alpha=I(0.5)) + scale_x_log10() + scale_y_log10() +
+qplot(mv$means, mv$vars, alpha=I(0.5)) + scale_x_log10() + scale_y_log10() + 
   geom_smooth(method="lm") + theme_bw() + theme(aspect.ratio=1)
 qplot(mv$means, d$tagwise.dispersion) + scale_x_log10() + scale_y_log10() +
   geom_smooth() + theme_bw() + theme(aspect.ratio=1)
@@ -110,14 +105,14 @@ nc.sig$sig05 <- ifelse(nc.sig$FDR < 0.05, "S", "NS")
 nc.sig$sig01 <- ifelse(nc.sig$FDR < 0.01, "S", "NS")
 
 # Porcupine plot with significance
-ggplot(nc.sig) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3,
+ggplot(nc.sig) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3, 
                                   yend=KD.PA.4, color=sig05)) +
-  scale_color_manual(values=c("S"="red", "NS"="grey90")) +
+  scale_color_manual(values=c("S"="red", "NS"="grey90")) + 
   xlab("CT") + ylab("KD") +
   theme_bw() + theme(aspect.ratio=1)
-ggplot(nc.sig) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3,
+ggplot(nc.sig) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3, 
                                   yend=KD.PA.4, color=sig01)) +
-  scale_color_manual(values=c("S"="red", "NS"="grey90")) +
+  scale_color_manual(values=c("S"="red", "NS"="grey90")) + 
   xlab("CT") + ylab("KD") +
   theme_bw() + theme(aspect.ratio=1)
 
@@ -125,15 +120,15 @@ ggplot(nc.sig) + geom_segment(aes(x=CT.PA.1, xend=CT.PA.2, y=KD.PA.3,
 nc.sig$sig01 <- factor(nc.sig$sig01, levels=c("NS","S"))
 ggscatmat(nc.sig, columns=2:8, color="sig01") +
   scale_color_manual(values=c("S"="red", "NS"="white"))
-ggscatmat(nc.sig[nc.sig$sig01=="S",], columns=2:8)
-ggparcoord(nc.sig, columns=2:8, scale="globalminmax", alphaLines=0.5,
+ggscatmat(nc.sig[nc.sig$sig01=="S",], columns=2:8)  
+ggparcoord(nc.sig, columns=2:8, scale="globalminmax", alphaLines=0.5, 
            groupColumn="sig01") +
-  scale_color_manual(values=c("S"="red", "NS"="grey90")) +
-  xlab("") + ylab("log(cpm)") +
+  scale_color_manual(values=c("S"="red", "NS"="grey90")) + 
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
-ggparcoord(nc.sig[nc.sig$sig01=="S",], columns=2:8, scale="globalminmax",
+ggparcoord(nc.sig[nc.sig$sig01=="S",], columns=2:8, scale="globalminmax", 
            alphaLines=0.5) +
-  xlab("") + ylab("log(cpm)") +
+  xlab("") + ylab("log(cpm)") + 
   theme_bw()
 
 # Interaction plots of top genes
@@ -144,10 +139,10 @@ g1 <- gather(nc.sig[1,2:8])
 g1$trt <- substr(g1$key, 1, 2)
 g1$read <- substr(g1$key, 4, 5)
 g1.mean <- summarise(group_by(g1, trt), m=mean(value))
-qplot(trt, value, data=g1, xlab="Treatment", ylab="logCPM", colour=read,
+qplot(trt, value, data=g1, xlab="Treatment", ylab="logCPM", colour=read, 
       size=I(5), alpha=I(0.5)) +
-  annotate("segment", x=1, xend=2, y=g1.mean$m[1],
-           yend=g1.mean$m[2], colour="grey80") +
+  annotate("segment", x=1, xend=2, y=g1.mean$m[1], 
+           yend=g1.mean$m[2], colour="grey80") + 
   ggtitle(nc.sig$gene[1]) +
   theme_bw() + theme(aspect.ratio=1)
 table(nc.sig$sig01)
@@ -155,14 +150,14 @@ g314 <- gather(nc.sig[314,2:8])
 g314$trt <- substr(g314$key, 1, 2)
 g314$read <- substr(g314$key, 4, 5)
 g314.mean <- summarise(group_by(g314, trt), m=mean(value))
-qplot(trt, value, data=g314, xlab="Treatment", ylab="logCPM", colour=read,
+qplot(trt, value, data=g314, xlab="Treatment", ylab="logCPM", colour=read, 
       size=I(5), alpha=I(0.5)) +
-  annotate("segment", x=1, xend=2, y=g314.mean$m[1],
-           yend=g314.mean$m[2], colour="grey80") +
+  annotate("segment", x=1, xend=2, y=g314.mean$m[1], 
+           yend=g314.mean$m[2], colour="grey80") + 
   ggtitle(nc.sig$gene[314]) +
   theme_bw() + theme(aspect.ratio=1)
 
-# To check the effect size, visually, we are going to scramble the
+# To check the effect size, visually, we are going to scramble the 
 # labels, and re-run the significance testing
 dp <- d
 ncp <- nc
@@ -177,20 +172,20 @@ ncp.sig <- arrange(ncp.sig, PValue)
 g1 <- gather(ncp.sig[1,2:8])
 g1$trt <- dp$samples$group
 g1.mean <- summarise(group_by(g1, trt), m=mean(value))
-qplot(trt, value, data=g1, xlab="Treatment", ylab="logCPM",
+qplot(trt, value, data=g1, xlab="Treatment", ylab="logCPM",  
       size=I(5), alpha=I(0.5)) +
-  annotate("segment", x=1, xend=2, y=g1.mean$m[1],
-           yend=g1.mean$m[2], colour="grey80") +
+  annotate("segment", x=1, xend=2, y=g1.mean$m[1], 
+           yend=g1.mean$m[2], colour="grey80") + 
   ggtitle(ncp.sig$gene[314]) +
   theme_bw() + theme(aspect.ratio=1)
 table(ncp.sig$sig01)
 g314 <- gather(ncp.sig[314,2:8])
 g314$trt <- dp$samples$group
 g314.mean <- summarise(group_by(g314, trt), m=mean(value))
-qplot(trt, value, data=g314, xlab="Treatment", ylab="logCPM",
+qplot(trt, value, data=g314, xlab="Treatment", ylab="logCPM", 
       size=I(5), alpha=I(0.5)) +
-  annotate("segment", x=1, xend=2, y=g314.mean$m[1],
-           yend=g314.mean$m[2], colour="grey80") +
+  annotate("segment", x=1, xend=2, y=g314.mean$m[1], 
+           yend=g314.mean$m[2], colour="grey80") + 
   ggtitle(ncp.sig$gene[314]) +
   theme_bw() + theme(aspect.ratio=1)
 
@@ -212,6 +207,6 @@ counts.df <- data.frame(katz.count.table[,c(1,3,2,4)])
 # Filter weakly expressed
 cpms = cpm(counts.df)
 counts.all <- counts.df
-keep = rowSums(cpms > 1) >= 2
+keep = rowSums(cpms > 1) >= 2 
 counts.df = counts.all[keep,]
 dim(counts.all); dim(counts.df)

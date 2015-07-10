@@ -9,12 +9,13 @@ pew <- read_csv("tidy/pew.csv")
 pew %>%
   gather(income, count, -religion)
 
-pew_tidy <- pew %>%
-  gather(income, count, -religion)
-
-pew_tidy %>%
+pew %>%
+  gather(income, count, -religion) %>%
   group_by(religion) %>%
-  mutate(prop = count / sum(count))
+  mutate(prop = count / sum(count)) %>%
+  ggplot(aes(income, prop)) +
+  geom_line(aes(group = religion)) +
+  facet_wrap(~religion)
 
 
 # Multiple variables in one column ----------------------------------------
@@ -46,10 +47,22 @@ tb_tidy %>%
 weather <- read_tsv("tidy/weather.txt", na = ".")
 weather %>%
   gather(day, value, `1`:`31`, na.rm = TRUE) %>%
-  spread(element, value)
+  spread(element, value) %>%
+  mutate(
+    tmin = as.numeric(tmin) / 10,
+    tmax = as.numeric(tmax) / 10,
+    t_range = tmax - tmin
+  )
 
 titanic2 <- read_csv("tidy/titanic2.csv")
 titanic2 %>%
   gather(gender, n, male:female) %>%
   spread(fate, n) %>%
+  mutate(rate = survived / (survived + perished))
+
+titanic2 %>%
+  gather(gender, n, male:female) %>%
+  spread(fate, n) %>%
+  group_by(class, gender) %>%
+  summarise(perished = sum(perished), survived = sum(survived)) %>%
   mutate(rate = survived / (survived + perished))
