@@ -149,6 +149,14 @@ ggplot(pd.coef) + geom_linerange(aes(x=g, ymin=ymin, ymax=ymax)) +
   coord_flip()
 head(pd.coef)
 
+# New package, that uses projection pursuit to find low-d projections
+# upon which to build classifier. Nice visualization of results
+library(PPtreeViz)
+Tree.result <- PP.Tree.class(tr.s.sd$Cinical_Status, tr.s.sd[,2:62],"PDA", 0.1)
+p <- PP.classify(Tree.result, ts.s.sd[,2:62], 1, ts.s.sd$Cinical_Status)
+plot(Tree.result)
+PPclassNode.Viz(Tree.result,1,1)
+
 # Color check
 library(dichromat)
 library(scales)
