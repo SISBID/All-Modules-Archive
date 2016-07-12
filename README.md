@@ -2,6 +2,9 @@
 
 Welcome to the SISBID 2016 course repository. Each of the five modules have been organized and grouped within this repository. 
 
+(**IMPORTANT:**) While we will do our best to keep this repository updated, for the latest course material for individual modules please see: <https://github.com/SISBID>
+![alt text](SISBIDpage.png "View the organization page for latest Module content")
+
 ## Information for Downloading Course Material
 To obtain all the course material, we have multiple options.
 
