@@ -1,8 +1,0 @@
-LibraryName;LibraryLayout;fastq1;fastq2;condition;shortname;countf
-Untreated-3;PAIRED;SRR031714_1.fastq,SRR031715_1.fastq;SRR031714_2.fastq,SRR031715_2.fastq;CTL;CT.PA.1;Untreated-3.count
-Untreated-4;PAIRED;SRR031716_1.fastq,SRR031717_1.fastq;SRR031716_2.fastq,SRR031717_2.fastq;CTL;CT.PA.2;Untreated-4.count
-CG8144_RNAi-3;PAIRED;SRR031724_1.fastq,SRR031725_1.fastq;SRR031724_2.fastq,SRR031725_2.fastq;KD;KD.PA.3;CG8144_RNAi-3.count
-CG8144_RNAi-4;PAIRED;SRR031726_1.fastq,SRR031727_1.fastq;SRR031726_2.fastq,SRR031727_2.fastq;KD;KD.PA.4;CG8144_RNAi-4.count
-Untreated-1;SINGLE;SRR031708.fastq,SRR031709.fastq,SRR031710.fastq,SRR031711.fastq,SRR031712.fastq,SRR031713.fastq;;CTL;CT.SI.5;Untreated-1.count
-CG8144_RNAi-1;SINGLE;SRR031718.fastq,SRR031719.fastq,SRR031720.fastq,SRR031721.fastq,SRR031722.fastq,SRR031723.fastq;;KD;KD.SI.6;CG8144_RNAi-1.count
-Untreated-6;SINGLE;SRR031728.fastq,SRR031729.fastq;;CTL;CT.SI.7;Untreated-6.count
