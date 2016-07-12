@@ -6,6 +6,7 @@ Welcome to the SISBID 2016 course repository. Each of the five modules have been
 To obtain all the course material, we have multiple options.
 
 1. Use the 'Clone or download' button on the Github webpage for the repo.
+![alt text](clone.png "Cloning a Repo, Downloading Material")
 2. In terminal/command line run the following command to clone the repo
 ```shell
 git clone https://github.com/SISBID/SISBID-All-Modules.git
