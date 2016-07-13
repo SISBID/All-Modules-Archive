@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>R - Big Data Tricks</title>
+  <title>Manipulating Data in R</title>
 
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -26,7 +26,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'R - Big Data Tricks',
+                title: 'Manipulating Data in R',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -94,401 +94,240 @@
           </hgroup>
   </slide>
 
-<slide class=''><hgroup><h2>Overview</h2></hgroup><article  id="overview">
+<slide class=''><hgroup><h2>Reshaping Data</h2></hgroup><article  id="reshaping-data">
 
-<p>There are several different tricks and approaches for handling &quot;big&quot; datasets in R. Most of these tricks either improve the importing of large datasets and/or speed up tasks applied to large datasets.</p>
+<p>In this module, we will show you how to:</p>
 
-</article></slide><slide class=''><hgroup><h2>R is memory intensive</h2></hgroup><article  id="r-is-memory-intensive">
+<ol>
+<li>Reshaping data from long (tall) to wide (fat)</li>
+<li>Reshaping data from wide (fat) to long (tall)</li>
+</ol>
 
-<p>R is pretty much limited by the amount of memory on your computer (or cluster), and potentially the number of cores on your computer (or cluster).</p>
+</article></slide><slide class=''><hgroup><h2>Setup</h2></hgroup><article  id="setup">
 
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Getting around memory limits</h2></hgroup><article  id="getting-around-memory-limits">
+<p>We will show you how to do each operation in base R then show you how to use the <code>dplyr</code> or <code>tidyr</code> package to do the same operation (if applicable).</p>
 
-</article></slide><slide class=''><hgroup><h2>Using Disk</h2></hgroup><article  id="using-disk">
-
-<p>The package <code>ff</code> can &quot;trick&quot; R into using disk space as virtual memory instead of relying on physical memory</p>
-
-<p><a href='https://cran.r-project.org/web/packages/ff/index.html' title=''>https://cran.r-project.org/web/packages/ff/index.html</a></p>
-
-</article></slide><slide class=''><hgroup><h2>Using Disk</h2></hgroup><article  id="using-disk-1">
-
-<p>There are <code>read.csv</code> and <code>read.table</code> functions for leveraging these <code>ff</code> objects.</p>
-
-<p>These functions are <code>read.csv.ffdf</code> and <code>read.table.ffdf</code> respectively.</p>
-
-<pre class = 'prettyprint lang-r'>suppressPackageStartupMessages(library(ff))
-mon_ff= read.csv.ffdf(file=&quot;../data/Monuments.csv&quot;)
-class(mon_ff)</pre>
-
-<pre >[1] &quot;ffdf&quot;</pre>
-
-</article></slide><slide class=''><hgroup><h2>Using Disk</h2></hgroup><article  id="using-disk-2">
-
-<p>New columns must be converted to the <code>ff</code> class:</p>
-
-<pre class = 'prettyprint lang-r'>mon_ff$newCol = ff(1:nrow(mon_ff))
-mon_ff[1:4,1:7]</pre>
-
-<pre >                              name zipCode neighborhood councilDistrict
-1           James Cardinal Gibbons   21201     Downtown              11
-2              The Battle Monument   21202     Downtown              11
-3 Negro Heroes of the U.S Monument   21202     Downtown              11
-4              Star Bangled Banner   21202     Downtown              11
-  policeDistrict                       Location.1 newCol
-1        CENTRAL  408 CHARLES ST\nBaltimore, MD\n      1
-2        CENTRAL                                       2
-3        CENTRAL                                       3
-4        CENTRAL 100 HOLLIDAY ST\nBaltimore, MD\n      4</pre>
-
-</article></slide><slide class=''><hgroup><h2>Using Disk</h2></hgroup><article  id="using-disk-3">
-
-<p>More info, with examples, can be found here:</p>
+<p>See the &quot;Data Wrangling Cheat Sheet using <code>dplyr</code> and <code>tidyr</code>&quot;:</p>
 
 <ul>
-<li><a href='http://hsinay.blogspot.com/p/big-data-analysis-using-ff-and-12-nov.html' title=''>http://hsinay.blogspot.com/p/big-data-analysis-using-ff-and-12-nov.html</a></li>
-<li><a href='http://ff.r-forge.r-project.org/bit&amp;ff2.1-2_WU_Vienna2010.pdf' title=''>http://ff.r-forge.r-project.org/bit&amp;ff2.1-2_WU_Vienna2010.pdf</a></li>
-<li><a href='https://www.r-project.org/conferences/useR-2007/program/presentations/adler.pdf' title=''>https://www.r-project.org/conferences/useR-2007/program/presentations/adler.pdf</a></li>
+<li><a href='https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf' title=''>https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf</a></li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Leveraging sparsity</h2></hgroup><article  id="leveraging-sparsity">
+</article></slide><slide class=''><hgroup><h2>Data used: Charm City Circulator</h2></hgroup><article  id="data-used-charm-city-circulator" class="smaller">
 
-<p>If your data is very sparse, e.g. contains a lot of 0s, then the <code>sparseMatrix</code> command in the <code>Matrix</code> package might be helpful</p>
+<p><a href='http://www.aejaffe.com/summerR_2016/data/Charm_City_Circulator_Ridership.csv' title=''>http://www.aejaffe.com/summerR_2016/data/Charm_City_Circulator_Ridership.csv</a></p>
 
-<p><a href='https://stat.ethz.ch/R-manual/R-devel/library/Matrix/html/sparseMatrix.html' title=''>https://stat.ethz.ch/R-manual/R-devel/library/Matrix/html/sparseMatrix.html</a></p>
+<pre class = 'prettyprint lang-r'>circ = read.csv(&quot;../data/Charm_City_Circulator_Ridership.csv&quot;, 
+                as.is = TRUE)
+head(circ, 2)</pre>
 
-<p>You need to provide which rows and columns have non-zero values (and the actual values themselves)</p>
+<pre >      day       date orangeBoardings orangeAlightings orangeAverage
+1  Monday 01/11/2010             877             1027           952
+2 Tuesday 01/12/2010             777              815           796
+  purpleBoardings purpleAlightings purpleAverage greenBoardings
+1              NA               NA            NA             NA
+2              NA               NA            NA             NA
+  greenAlightings greenAverage bannerBoardings bannerAlightings
+1              NA           NA              NA               NA
+2              NA           NA              NA               NA
+  bannerAverage daily
+1            NA   952
+2            NA   796</pre>
 
-</article></slide><slide class=''><hgroup><h2>Leveraging sparsity</h2></hgroup><article  id="leveraging-sparsity-1">
+</article></slide><slide class=''><hgroup><h2>Creating a Date class from a character date</h2></hgroup><article  id="creating-a-date-class-from-a-character-date">
 
-<p>We&#39;ve had to do this for genomics projects:</p>
+<pre class = 'prettyprint lang-r'>library(lubridate) # great for dates!
+library(dplyr) # mutate/summarise functions
+circ = mutate(circ, date = mdy(date))
+sum( is.na(circ$date) ) # all converted correctly</pre>
+
+<pre >[1] 0</pre>
+
+<pre class = 'prettyprint lang-r'>head(circ$date)</pre>
+
+<pre >[1] &quot;2010-01-11&quot; &quot;2010-01-12&quot; &quot;2010-01-13&quot; &quot;2010-01-14&quot; &quot;2010-01-15&quot;
+[6] &quot;2010-01-16&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>class(circ$date)</pre>
+
+<pre >[1] &quot;Date&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2>Making column names a little more separated</h2></hgroup><article  id="making-column-names-a-little-more-separated">
+
+<p>We will use <code>str_replace</code> from <code>stringr</code> to put periods in the column names.</p>
+
+<pre class = 'prettyprint lang-r'>library(stringr)
+cn = colnames(circ)
+cn = cn %&gt;% 
+  str_replace(&quot;Board&quot;, &quot;.Board&quot;) %&gt;% 
+  str_replace(&quot;Alight&quot;, &quot;.Alight&quot;) %&gt;% 
+  str_replace(&quot;Average&quot;, &quot;.Average&quot;) 
+colnames(circ) = cn
+cn</pre>
+
+<pre > [1] &quot;day&quot;               &quot;date&quot;              &quot;orange.Boardings&quot; 
+ [4] &quot;orange.Alightings&quot; &quot;orange.Average&quot;    &quot;purple.Boardings&quot; 
+ [7] &quot;purple.Alightings&quot; &quot;purple.Average&quot;    &quot;green.Boardings&quot;  
+[10] &quot;green.Alightings&quot;  &quot;green.Average&quot;     &quot;banner.Boardings&quot; 
+[13] &quot;banner.Alightings&quot; &quot;banner.Average&quot;    &quot;daily&quot;            </pre>
+
+</article></slide><slide class=''><hgroup><h2>Reshaping data from wide (fat) to long (tall)</h2></hgroup><article  id="reshaping-data-from-wide-fat-to-long-tall">
+
+<p>See <a href='http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/' title=''>http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/</a></p>
 
 <ul>
-<li><a href='http://biorxiv.org/content/early/2016/01/29/038224' title=''>http://biorxiv.org/content/early/2016/01/29/038224</a> with corresponding code:</li>
-<li><a href='https://github.com/nellore/runs/blob/master/sra/v2/countJunctions.R' title=''>https://github.com/nellore/runs/blob/master/sra/v2/countJunctions.R</a></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Leveraging sparsity</h2></hgroup><article  id="leveraging-sparsity-2">
-
-<p>Run length encoding (RLE) is a popular approach for handling sparse vectors&#8230;the<code>DataFrame()</code> function in the <code>IRanges</code> package creates a more flexible extension of the <code>data.frame</code> class</p>
-
-<pre class = 'prettyprint lang-r'>x= rep(c(0,1,0,1,0), times=c(10000,4,10000,6,10000))
-length(x)</pre>
-
-<pre >[1] 30010</pre>
-
-<pre class = 'prettyprint lang-r'>rle(x) # base r</pre>
-
-<pre >Run Length Encoding
-  lengths: int [1:5] 10000 4 10000 6 10000
-  values : num [1:5] 0 1 0 1 0</pre>
-
-</article></slide><slide class=''><hgroup><h2>Leveraging sparsity</h2></hgroup><article  id="leveraging-sparsity-3">
-
-<pre class = 'prettyprint lang-r'>suppressPackageStartupMessages(library(IRanges))
-df= data.frame(x=x)
-DF = DataFrame(df)
-Rle(x) # from IRanges, s4-methods</pre>
-
-<pre >numeric-Rle of length 30010 with 5 runs
-  Lengths: 10000     4 10000     6 10000
-  Values :     0     1     0     1     0</pre>
-
-<pre class = 'prettyprint lang-r'>DF$x = Rle(DF$x) # note the capital R
-head(DF)</pre>
-
-<pre >DataFrame with 6 rows and 1 column
-      x
-  &lt;Rle&gt;
-1     0
-2     0
-3     0
-4     0
-5     0
-6     0</pre>
-
-</article></slide><slide class=''><hgroup><h2>Leveraging sparsity</h2></hgroup><article  id="leveraging-sparsity-4">
-
-<p>How much space did we save in memory?</p>
-
-<pre class = 'prettyprint lang-r'>s1=object.size(df)
-s1</pre>
-
-<pre >240752 bytes</pre>
-
-<pre class = 'prettyprint lang-r'>s2=object.size(DF)
-s2</pre>
-
-<pre >2896 bytes</pre>
-
-<pre class = 'prettyprint lang-r'>as.numeric(round(s1/s2))</pre>
-
-<pre >[1] 83</pre>
-
-<p>You can see this will can add up for large datasets. Note this doesn&#39;t rely on sparity per se, but rather many repeated fields that cluster together.</p>
-
-</article></slide><slide class=''><hgroup><h2>Leveraging Sparsity</h2></hgroup><article  id="leveraging-sparsity-5">
-
-<p>We&#39;ve also used these file encoding for genomics projects:</p>
+<li>Wide - multiple columns per observation
 
 <ul>
-<li><a href='http://biorxiv.org/content/early/2016/05/19/015370' title=''>http://biorxiv.org/content/early/2016/05/19/015370</a> with package:</li>
-<li><a href='https://www.bioconductor.org/packages/release/bioc/html/derfinder.html' title=''>https://www.bioconductor.org/packages/release/bioc/html/derfinder.html</a></li>
+<li>e.g. visit1, visit2, visit3</li>
+</ul></li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Using Databases</h2></hgroup><article  id="using-databases">
-
-<p>Jeff covered this yesterday. If you can store the really large dataset in a SQL database, then it&#39;s easy to create your own SQL queries to read in only a subset of the dataset.</p>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Speeding up computing</h2></hgroup><article  id="speeding-up-computing">
-
-</article></slide><slide class=''><hgroup><h2>Parallel libraries</h2></hgroup><article  id="parallel-libraries">
-
-<p>Almost all R functions use only a single core on your computer but you can leverage more cores. You can usually speed up code by using multiple cores on your computer.</p>
+<pre >  id visit1 visit2 visit3
+1  1     10      4      3
+2  2      5      6     NA</pre>
 
 <ul>
-<li><a href='https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf' title=''>doParallel</a></li>
-<li><a href='http://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/' title=''>Parallel Basics</a></li>
-<li><a href='http://www.inside-r.org/packages/cran/multicore/docs/mclapply' title=''>mclapply</a></li>
-<li><a href='https://cran.r-project.org/web/views/HighPerformanceComputing.html' title=''>HPC</a></li>
+<li>Long - multiple rows per observation</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Parallel libraries</h2></hgroup><article  id="parallel-libraries-1">
+<pre >  id visit value
+1  1     1    10
+2  1     2     4
+3  1     3     3
+4  2     1     5
+5  2     2     6</pre>
 
-<p>You can parallelize <code>lapply()</code> (or <code>sapply()</code>) statements with the <code>parallel::mclapply()</code> function.</p>
+</article></slide><slide class=''><hgroup><h2>Reshaping data from wide (fat) to long (tall): base R</h2></hgroup><article  id="reshaping-data-from-wide-fat-to-long-tall-base-r">
 
-<p>You can parallel <code>for</code> loops with the <code>foreach()</code> with <code>%dopar%</code> syntax. [<code>foreach</code> with <code>%do%</code> are analogous to <code>for</code> loops]</p>
+<p>The <code>reshape</code> command exists. It is a <strong>confusing</strong> function. Don&#39;t use it.</p>
 
-</article></slide><slide class=''><hgroup><h2>mclapply</h2></hgroup><article  id="mclapply">
+</article></slide><slide class=''><hgroup><h2>Reshaping data from wide (fat) to long (tall): tidyr</h2></hgroup><article  id="reshaping-data-from-wide-fat-to-long-tall-tidyr" class="smaller">
 
-<p>Let&#39;s make some data</p>
+<p><code>tidyr::gather</code> - puts column data into rows.</p>
 
-<pre class = 'prettyprint lang-r'>set.seed(34)
-x = rnorm(10000)
-datList = replicate(10000, sample(1:10000),simplify = FALSE)
-class(datList)</pre>
+<p>We want the column names into &quot;<code>var</code>&quot; variable in the output dataset and the value in &quot;<code>number</code>&quot; variable. We then describe which columns we want to &quot;gather:&quot;</p>
 
-<pre >[1] &quot;list&quot;</pre>
+<pre class = 'prettyprint lang-r'>library(tidyr)
+long = gather(circ, key = &quot;var&quot;, value = &quot;number&quot;, 
+              starts_with(&quot;orange&quot;),
+              starts_with(&quot;purple&quot;), 
+              starts_with(&quot;green&quot;),
+              starts_with(&quot;banner&quot;))
+head(long, 2)</pre>
 
-<pre class = 'prettyprint lang-r'>lapply(datList[1:5], head)</pre>
+<pre >      day       date daily              var number
+1  Monday 2010-01-11   952 orange.Boardings    877
+2 Tuesday 2010-01-12   796 orange.Boardings    777</pre>
 
-<pre >[[1]]
-[1] 4256 7445  260  313 9273  728
+<pre class = 'prettyprint lang-r'>table(long$var)</pre>
 
-[[2]]
-[1] 6459  630 7206 5323 7854   41
+<pre >
+banner.Alightings    banner.Average  banner.Boardings  green.Alightings 
+             1146              1146              1146              1146 
+    green.Average   green.Boardings orange.Alightings    orange.Average 
+             1146              1146              1146              1146 
+ orange.Boardings purple.Alightings    purple.Average  purple.Boardings 
+             1146              1146              1146              1146 </pre>
 
-[[3]]
-[1] 9448 4018 1092 5964 3374 7034
+</article></slide><slide class=''><hgroup><h2>Reshaping data from wide (fat) to long (tall): tidyr</h2></hgroup><article  id="reshaping-data-from-wide-fat-to-long-tall-tidyr-1">
 
-[[4]]
-[1] 3469 1983 6275 1669 4334 9530
+<p>Now each <code>var</code> is boardings, averages, or alightings. We want to separate these so we can have these by line.</p>
 
-[[5]]
-[1] 5305 8067 8928 3201 7422 6899</pre>
+<pre class = 'prettyprint lang-r'>long = separate_(long, &quot;var&quot;, 
+                 into = c(&quot;line&quot;, &quot;type&quot;), 
+                 sep = &quot;[.]&quot;)
+head(long, 3)</pre>
 
-<pre class = 'prettyprint lang-r'>head(x)</pre>
+<pre >        day       date  daily   line      type number
+1    Monday 2010-01-11  952.0 orange Boardings    877
+2   Tuesday 2010-01-12  796.0 orange Boardings    777
+3 Wednesday 2010-01-13 1211.5 orange Boardings   1203</pre>
 
-<pre >[1] -0.1388900  1.1998129 -0.7477224 -0.5752482 -0.2635815 -0.4554921</pre>
+<pre class = 'prettyprint lang-r'>unique(long$line)</pre>
 
-</article></slide><slide class=''><hgroup><h2>mclapply</h2></hgroup><article  id="mclapply-1">
+<pre >[1] &quot;orange&quot; &quot;purple&quot; &quot;green&quot;  &quot;banner&quot;</pre>
 
-<p>Let&#39;s try to run <code>mclapply()</code> and compare to the output of <code>lapply()</code></p>
+<pre class = 'prettyprint lang-r'>unique(long$type)</pre>
 
-<pre class = 'prettyprint lang-r'>system.time(lapply(datList,cor,x))</pre>
+<pre >[1] &quot;Boardings&quot;  &quot;Alightings&quot; &quot;Average&quot;   </pre>
 
-<pre >   user  system elapsed 
-   1.50    0.04    1.55 </pre>
+</article></slide><slide class=''><hgroup><h2>Finding the First (or Last) record</h2></hgroup><article  id="finding-the-first-or-last-record">
 
-<pre class = 'prettyprint lang-r'>system.time(mclapply(datList, cor, x))</pre>
+<pre class = 'prettyprint lang-r'>long = long %&gt;% filter(!is.na(number) &amp; number &gt; 0)
+first_and_last = long %&gt;% arrange(date) %&gt;% # arrange by date
+  filter(type %in% &quot;Boardings&quot;) %&gt;% # keep boardings only
+  group_by(line) %&gt;% # group by line
+  slice( c(1, n())) # select (&quot;slice&quot;) first and last (n() command) lines
+first_and_last %&gt;%  head(4)</pre>
 
-<pre >   user  system elapsed 
-   1.46    0.11    1.57 </pre>
+<pre >Source: local data frame [4 x 6]
+Groups: line [2]
 
-<p>???</p>
+      day       date   daily   line      type number
+    &lt;chr&gt;     &lt;date&gt;   &lt;dbl&gt;  &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt;
+1  Monday 2012-06-04 13342.5 banner Boardings    520
+2  Friday 2013-03-01      NA banner Boardings    817
+3 Tuesday 2011-11-01  8873.0  green Boardings    887
+4  Friday 2013-03-01      NA  green Boardings   2592</pre>
 
-</article></slide><slide class=''><hgroup><h2>mclapply</h2></hgroup><article  id="mclapply-2">
+</article></slide><slide class=''><hgroup><h2>Reshaping data from long (tall) to wide (fat): tidyr</h2></hgroup><article  id="reshaping-data-from-long-tall-to-wide-fat-tidyr">
 
-<p>This only works on Linux/Mac, and not Windows <code>:(</code></p>
+<p>In <code>tidyr</code>, the <code>spread</code> function spreads rows into columns. Now we have a long data set, but we want to separate the Average, Alightings and Boardings into different columns:</p>
 
-<pre >&gt; system.time(mclapply(datList,function(y) cor(x,y),mc.cores=4))
-Error in mclapply(datList, sort, mc.cores = 4) : 
-  &#39;mc.cores&#39; &gt; 1 is not supported on Windows</pre>
+<pre class = 'prettyprint lang-r'># have to remove missing days
+wide = filter(long, !is.na(date))
+wide = spread(wide, type, number)
+head(wide)</pre>
 
-</article></slide><slide class=''><hgroup><h2>doParallel</h2></hgroup><article  id="doparallel">
+<pre >     day       date  daily   line Alightings Average Boardings
+1 Friday 2010-01-15 1644.0 orange       1643  1644.0      1645
+2 Friday 2010-01-22 1394.5 orange       1388  1394.5      1401
+3 Friday 2010-01-29 1332.0 orange       1322  1332.0      1342
+4 Friday 2010-02-05 1217.5 orange       1204  1217.5      1231
+5 Friday 2010-02-12  671.0 orange        678   671.0       664
+6 Friday 2010-02-19 1642.0 orange       1647  1642.0      1637</pre>
 
-<p>The <code>doParallel</code> library works better on Windows:</p>
+</article></slide><slide class=''><hgroup><h2>Reshaping data from long (tall) to wide (fat): tidyr</h2></hgroup><article  id="reshaping-data-from-long-tall-to-wide-fat-tidyr-1">
 
-<pre class = 'prettyprint lang-r'>suppressPackageStartupMessages(library(doParallel))
-system.time(foreach(i=1:10000) %do% cor(datList[[i]],x))</pre>
+<p>We can use <code>rowSums</code> to see if any values in the row is <code>NA</code> and keep if the row, which is a combination of date and line type has any non-missing data.</p>
 
-<pre >   user  system elapsed 
-   4.68    0.04    4.76 </pre>
-
-<pre class = 'prettyprint lang-r'>system.time(foreach(i=1:10000) %dopar% cor(datList[[i]],x))</pre>
-
-<pre >Warning: executing %dopar% sequentially: no parallel backend registered</pre>
-
-<pre >   user  system elapsed 
-   4.37    0.00    4.39 </pre>
-
-<p>Oops! You need to initiate a parallel backend first!</p>
-
-</article></slide><slide class=''><hgroup><h2>doParallel</h2></hgroup><article  id="doparallel-1">
-
-<p>Implementing parallel backend:</p>
-
-<pre class = 'prettyprint lang-r'>registerDoParallel(cores=2)
-system.time(foreach(i=1:10000) %dopar% cor(datList[[i]], x))</pre>
-
-<pre >   user  system elapsed 
-   4.57    1.87   13.31 </pre>
-
-<p>This task was not particularly amenable to parallelization, but you get the idea of the code.</p>
-
-<p>This is a good quick-start guide: <a href='http://blog.aicry.com/r-parallel-computing-in-5-minutes/' title=''>http://blog.aicry.com/r-parallel-computing-in-5-minutes/</a></p>
-
-</article></slide><slide class=''><hgroup><h2>Vectorization</h2></hgroup><article  id="vectorization">
-
-<p>Some tasks can be computed quickly just using vector or matrix-based calculations instead of iterating:</p>
-
-<pre class = 'prettyprint lang-r'>datMat = simplify2array(datList)
-class(datMat)</pre>
-
-<pre >[1] &quot;matrix&quot;</pre>
-
-<pre class = 'prettyprint lang-r'>dim(datMat)</pre>
-
-<pre >[1] 10000 10000</pre>
-
-<pre class = 'prettyprint lang-r'>system.time(cor(x,datMat))</pre>
-
-<pre >   user  system elapsed 
-   0.81    0.14    2.48 </pre>
-
-</article></slide><slide class=''><hgroup><h2>Rcpp</h2></hgroup><article  id="rcpp">
-
-<p>The <code>Rcpp</code> package allows you to write C++ code and run it within R.</p>
-
-<p><a href='http://gallery.rcpp.org/' title=''>http://gallery.rcpp.org/</a> <a href='http://dirk.eddelbuettel.com/code/rcpp/Rcpp-introduction.pdf' title=''>http://dirk.eddelbuettel.com/code/rcpp/Rcpp-introduction.pdf</a> <a href='https://cran.r-project.org/web/packages/Rcpp/index.html' title=''>https://cran.r-project.org/web/packages/Rcpp/index.html</a></p>
-
-<p>[Note: I am not very good at C++, and it usually takes me a lot less time to just let code run longer than figure out how to do something in C]</p>
-
-</article></slide><slide class=''><hgroup><h2>GPU computing</h2></hgroup><article  id="gpu-computing">
-
-<p>There are packages that can rely on &quot;graphics processing units&quot; aka video cards that can greatly speed up linear computations</p>
-
-<p><a href='http://www.r-tutor.com/gpu-computing' title=''>http://www.r-tutor.com/gpu-computing</a> <a href='http://www.r-tutor.com/gpu-computing/clustering/distance-matrix' title=''>http://www.r-tutor.com/gpu-computing/clustering/distance-matrix</a></p>
-
-<p>[Note: I have never actually used this, and it usually takes me a lot less time to just let code run longer than figure out how to do something using the GPU]</p>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Modifying data prior to importing</h2></hgroup><article  id="modifying-data-prior-to-importing">
-
-</article></slide><slide class=''><hgroup><h2>Slicing and dicing large data</h2></hgroup><article  id="slicing-and-dicing-large-data">
-
-<p>Say you have a large tab-delimited matrix that has dimensions: 100,000,000 (rows) x 500 (columns) called <code>foo.txt</code></p>
-
-<p>The easiest tricks are for Mac or Linux computers since you can utilize very fast linux file processing on text files prior to importing data into R</p>
-
-</article></slide><slide class=''><hgroup><h2>(Linux) Piping</h2></hgroup><article  id="linux-piping">
-
-<p>R can read in the output of Linux commands using the <code>pipe()</code> function.</p>
-
-<pre >dat = read.delim(pipe([some command]))</pre>
-
-<p>The most useful two linux functions are <code>awk</code> (for selecting rows) and <code>cut</code> (for selecting columns)</p>
-
-</article></slide><slide class=''><hgroup><h2>awk</h2></hgroup><article  id="awk">
-
-<p>Here are a collection of useful &quot;one liners&quot; using <code>awk</code></p>
-
-<p><a href='http://www.pement.org/awk/awk1line.txt' title=''>http://www.pement.org/awk/awk1line.txt</a></p>
-
-<p>Note, I almost always have to google how to use <code>awk</code> to remember the exact syntax for specific tasks</p>
-
-</article></slide><slide class=''><hgroup><h2>awk</h2></hgroup><article  id="awk-1">
-
-<p>Let&#39;s say we want to select all rows where the second column has the values &quot;chr21&quot;</p>
-
-<p>The awk command looks like:</p>
-
-<p><code>awk -F&quot;\t&quot; &#39;$2 == &quot;chr21&quot; { print $0 }&#39; foo.txt</code></p>
-
-<p>Note in linux you would probably redirect this to a file, but R can handle this &quot;on the fly&quot;</p>
-
-</article></slide><slide class=''><hgroup><h2>awk</h2></hgroup><article  id="awk-2" class="smaller">
-
-<pre class = 'prettyprint lang-r'>&gt; awkCall = &quot;awk -F\&quot;\t\&quot; &#39;$2 == \&quot;chr21\&quot; { print $0 }&#39; foo.txt&quot;
-&gt; read.delim(pipe(awkCall),header=FALSE)
-     V1    V2         V3        V4        V5        V6        V7         V8
-1  row6 chr21 0.06470508 0.2104643 0.2630865 0.6748644 0.5838493 0.59531516
-2  row7 chr21 0.69930753 0.9533248 0.7929459 0.7084059 0.5305247 0.37651206
-3  row8 chr21 0.31752770 0.6364067 0.7774075 0.6607039 0.5074746 0.43583281
-4  row9 chr21 0.18445757 0.1926704 0.5522359 0.4889265 0.2885484 0.36124031
-5 row10 chr21 0.96333352 0.9455556 0.2251288 0.7133460 0.2673244 0.01864215
-         V9       V10        V11
-1 0.5832685 0.8670779 0.08756482
-2 0.9471309 0.6032699 0.37931679
-3 0.2296118 0.4037352 0.37954743
-4 0.3595676 0.6895200 0.09194656
-5 0.1601413 0.4742028 0.07500326</pre>
-
-</article></slide><slide class=''><hgroup><h2>awk</h2></hgroup><article  id="awk-3" class="smaller">
-
-<p>Maybe we don&#39;t want all of the columns</p>
-
-<pre class = 'prettyprint lang-r'>&gt; awkCall2 = &quot;awk -F\&quot;\t\&quot; &#39;$2 == \&quot;chr21\&quot; { print $2\&quot;\t\&quot;$3\&quot;\t\&quot;$4 }&#39; foo.txt&quot;
-&gt; read.delim(pipe(awkCall2),header=FALSE)
-     V1         V2        V3
-1 chr21 0.06470508 0.2104643
-2 chr21 0.69930753 0.9533248
-3 chr21 0.31752770 0.6364067
-4 chr21 0.18445757 0.1926704
-5 chr21 0.96333352 0.9455556</pre>
-
-</article></slide><slide class=''><hgroup><h2>awk</h2></hgroup><article  id="awk-4">
-
-<p>Note you have to &quot;escape&quot; all of the quotation marks that are within the actual awk call so that they are not treated by quotation marks in R</p>
-
-</article></slide><slide class=''><hgroup><h2>cut</h2></hgroup><article  id="cut">
-
-<p><code>cut</code> selects certain columns</p>
-
-<p>Let&#39;s take columns 2, 3, and 4 for all rows:</p>
-
-<pre class = 'prettyprint lang-r'>&gt; cutCall = &quot;cut -f2,3,4 foo.txt&quot;
-&gt; read.delim(pipe(cutCall),header=FALSE)
-      V1         V2         V3
-1   chr1 0.55127556 0.06161779
-2   chr1 0.97378813 0.84200893
-3   chr1 0.67479999 0.54580091
-4   chr1 0.90762683 0.62246401
-5   chr1 0.27251173 0.09567016
-6  chr21 0.06470508 0.21046433
-7  chr21 0.69930753 0.95332484
-8  chr21 0.31752770 0.63640675
-9  chr21 0.18445757 0.19267041
-10 chr21 0.96333352 0.94555563</pre>
-
-</article></slide><slide class=''><hgroup><h2>cut</h2></hgroup><article  id="cut-1">
-
-<p>The <code>-d</code> option specifies that string that separates columns</p>
-
-</article></slide><slide class=''><hgroup><h2>Combining awk + cut</h2></hgroup><article  id="combining-awk-cut" class="smaller">
-
-<p>You can also use the linux pipe &quot;|&quot; within the R <code>pipe()</code> call:</p>
-
-<pre class = 'prettyprint lang-r'>&gt; bothCall = paste(&quot;awk -F\&quot;\t\&quot; &#39;$2 == \&quot;chr21\&quot; { print $0 }&#39; foo.txt | cut -f2,3,4&quot;)
-&gt; read.delim(pipe(bothCall),header=FALSE)
-     V1         V2        V3
-1 chr21 0.06470508 0.2104643
-2 chr21 0.69930753 0.9533248
-3 chr21 0.31752770 0.6364067
-4 chr21 0.18445757 0.1926704
-5 chr21 0.96333352 0.9455556</pre>
-
-</article></slide><slide class=''><hgroup><h2>Windows users</h2></hgroup><article  id="windows-users">
-
-<p>Doing all of this in Windows takes a lot more setup, and there are a more limited set of Linux commands: <a href='http://stackoverflow.com/questions/23963106/read-columns-of-a-csv-file-using-shell-or-pipe-inside-r-windows' title=''>http://stackoverflow.com/questions/23963106/read-columns-of-a-csv-file-using-shell-or-pipe-inside-r-windows</a></p></article></slide>
+<pre class = 'prettyprint lang-r'># wide = wide %&gt;%
+#     select(Alightings, Average, Boardings) %&gt;%
+#     mutate(good = rowSums(is.na(.)) &gt; 0)
+namat = !is.na(select(wide, Alightings, Average, Boardings))
+head(namat)</pre>
+
+<pre >  Alightings Average Boardings
+1       TRUE    TRUE      TRUE
+2       TRUE    TRUE      TRUE
+3       TRUE    TRUE      TRUE
+4       TRUE    TRUE      TRUE
+5       TRUE    TRUE      TRUE
+6       TRUE    TRUE      TRUE</pre>
+
+<pre class = 'prettyprint lang-r'>wide$good = rowSums(namat) &gt; 0
+head(wide, 3)</pre>
+
+<pre >     day       date  daily   line Alightings Average Boardings good
+1 Friday 2010-01-15 1644.0 orange       1643  1644.0      1645 TRUE
+2 Friday 2010-01-22 1394.5 orange       1388  1394.5      1401 TRUE
+3 Friday 2010-01-29 1332.0 orange       1322  1332.0      1342 TRUE</pre>
+
+</article></slide><slide class=''><hgroup><h2>Reshaping data from long (tall) to wide (fat): tidyr</h2></hgroup><article  id="reshaping-data-from-long-tall-to-wide-fat-tidyr-2">
+
+<p>Now we can filter only the good rows and delete the <code>good</code> column.</p>
+
+<pre class = 'prettyprint lang-r'>wide = filter(wide, good) %&gt;% select(-good)
+head(wide)</pre>
+
+<pre >     day       date  daily   line Alightings Average Boardings
+1 Friday 2010-01-15 1644.0 orange       1643  1644.0      1645
+2 Friday 2010-01-22 1394.5 orange       1388  1394.5      1401
+3 Friday 2010-01-29 1332.0 orange       1322  1332.0      1342
+4 Friday 2010-02-05 1217.5 orange       1204  1217.5      1231
+5 Friday 2010-02-12  671.0 orange        678   671.0       664
+6 Friday 2010-02-19 1642.0 orange       1647  1642.0      1637</pre></article></slide>
 
 
   <slide class="backdrop"></slide>
