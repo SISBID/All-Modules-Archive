@@ -45,7 +45,7 @@ library(gridExtra)
 ## Shiny Documentation and Help
 
 - [RStudio Tutorial](http://shiny.rstudio.com/tutorial/)  
-Much of tonight's material is motivated by this tutorial
+Much of today's material is motivated by this tutorial
 - [Shiny Setup, Showcase, and Server setup](http://shiny.rstudio.com)  
 Useful if you want to use shiny on your own webserver
 - [Shiny Github Page](https://github.com/rstudio/shiny)  
@@ -145,7 +145,7 @@ runApp("01_Hello", display.mode = "showcase")
 
 ## Shiny Inputs
 
-Shiny has many different input options:
+Shiny has many different [input options](http://shiny.rstudio.com/gallery/widget-gallery.html):
 
 - `actionButton()` - creates a clickable button
 - `checkboxInput()` and `checkboxGroupInput()`
